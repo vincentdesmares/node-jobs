@@ -1,0 +1,31 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:flowtype/recommended"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "jasmine": true,
+    "es6": true
+  },
+  "plugins": [
+    "react",
+    "async-await",
+    "flowtype"
+  ],
+  "rules": {
+    // disable rules from base configurations
+    "no-console": "off"
+  },
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true,
+      "es6": true,
+      "experimentalObjectRestSpread": true
+    }
+  }
+}

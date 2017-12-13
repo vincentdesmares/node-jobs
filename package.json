@@ -1,0 +1,60 @@
+{
+  "name": "node-jobs",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:8080",
+  "engines": {
+    "node": "^7"
+  },
+  "dependencies": {
+    "@std/esm": "^0.2.2",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "fast-simplex-noise": "^3.2.0",
+    "graphql-server-express": "^1.0.0",
+    "graphql-subscriptions": "^0.4.4",
+    "graphql-tools": "^1.1.0",
+    "isomorphic-fetch": "^2.2.1",
+    "jest": "^21.2.1",
+    "material-design-icons": "^3.0.1",
+    "minimist": "^1.2.0",
+    "pm2": "^2.5.0",
+    "prop-types": "^15.5.10",
+    "react": "^15.6.1",
+    "react-apollo": "^1.4.2",
+    "react-dom": "^15.6.1",
+    "react-redux": "^5.0.5",
+    "react-router": "^4.1.1",
+    "react-router-dom": "^4.1.2",
+    "react-router-redux": "^4.0.8",
+    "redux-form": "^7.0.3",
+    "reselect": "^3.0.1",
+    "seedrandom": "^2.4.3",
+    "sequelize": "^4.3.2",
+    "sequelize-cli": "^2.7.0",
+    "subscriptions-transport-ws": "^0.8.1",
+    "tachyons": "4.7.0",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-flow": "^6.23.0",
+    "eslint": "^4.1.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-async-await": "^0.0.0",
+    "eslint-plugin-flowtype": "^2.35.0",
+    "flow-bin": "^0.51.0",
+    "react-scripts": "1.0.7"
+  },
+  "scripts": {
+    "start-client": "pm2 delete --silent web; pm2 start  react-scripts --name web -- start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "flow": "flow",
+    "start-server": "pm2 startOrRestart ecosystem.config.js",
+    "start-all": "yarn run start-server && yarn run start-client",
+    "db:migrate": "node_modules/.bin/sequelize db:migrate",
+    "migration:create": "node_modules/.bin/sequelize migration:create"
+  }
+}

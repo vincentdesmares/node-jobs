@@ -1,0 +1,14 @@
+ENVI
+description = {
+public/assets/test.bin}
+samples = 100
+lines   = 100
+bands   = 1
+header offset = 0
+file type = ENVI Standard
+data type = 12
+interleave = bsq
+byte order = 0
+map info = {Arbitrary, 1, 1, -0.5, -0.5, 1, 1, 0, North}
+band names = {
+Band 1}
