@@ -1,10 +1,8 @@
 {
   "development": {
-    "username": "procgen",
-    "password": null,
-    "database": "procgen",
+    "storage": "data/main.db",
     "host": "127.0.0.1",
-    "dialect": "postgres"
+    "dialect": "sqlite"
   },
   "test": {
     "username": "root",

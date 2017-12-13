@@ -1,7 +1,7 @@
 "use strict";
 const Sequelize = require("sequelize");
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function(sequelize) {
   var Batch = sequelize.define(
     "Batch",
     {

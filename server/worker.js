@@ -3,7 +3,6 @@ const uuidv4 = require("uuid/v4");
 
 console.log("Uniq id for worker life:", uuidv4());
 
-const fetch = require("isomorphic-fetch");
 const ApolloModule = require("apollo-client");
 const ApolloClient = ApolloModule.default;
 const createNetworkInterface = ApolloModule.createNetworkInterface;
@@ -49,41 +48,43 @@ const worker = new WorkerClass();
 //   .catch(error => console.error(error));
 
 const getNextJobQuery = gql`
-      mutation getNextJob($type: String!) {
-          getNextJob(type: $type) {
-              id
-              type
-              name
-              input
-              output
-          }
-      }
-    `;
+  mutation getNextJob($type: String!) {
+    getNextJob(type: $type) {
+      id
+      type
+      name
+      input
+      output
+    }
+  }
+`;
 
 const updateJobQuery = gql`
-      mutation updateJob(
-              $id: String,
-              $type: String,
-              $name: String,
-              $input: String,
-              $output: String,
-              $status: String
-          ) {
-          updateJob(id: $id,
-              type: $type,
-              name: $name,
-              input: $input,
-              output: $output
-              status: $status) {
-              id
-              type
-              name
-              input
-              output
-              status
-          }
-      }
-    `;
+  mutation updateJob(
+    $id: String
+    $type: String
+    $name: String
+    $input: String
+    $output: String
+    $status: String
+  ) {
+    updateJob(
+      id: $id
+      type: $type
+      name: $name
+      input: $input
+      output: $output
+      status: $status
+    ) {
+      id
+      type
+      name
+      input
+      output
+      status
+    }
+  }
+`;
 
 function checkForJobs() {
   client

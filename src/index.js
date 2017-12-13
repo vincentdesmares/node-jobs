@@ -39,9 +39,6 @@ const client = new ApolloClient({
 
 const store = createStore(
   combineReducers({
-    // todos: todoReducer,
-    // users: userReducer,
-    //routing: routerReducer,
     apollo: client.reducer(),
     form: formReducer
   }),

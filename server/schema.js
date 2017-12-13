@@ -1,7 +1,5 @@
 const { makeExecutableSchema } = require("graphql-tools");
 
-const { find, filter } = require("lodash");
-
 const { Job, Project, Scene, Batch } = require("./models");
 
 const { PubSub } = require("graphql-subscriptions");
@@ -193,7 +191,7 @@ const resolvers = {
     batch: (_, { id }) => Batch.findById(id)
   },
   Mutation: {
-    updateJob: (_, { id, type, name, input, output, status }) => {
+    updateJob: (_, { id, output, status }) => {
       return Job.findById(id).then(function(job) {
         job.output = output;
         job.status = status;
@@ -230,7 +228,7 @@ const resolvers = {
         return scene;
       });
     },
-    getNextJob: (_, { type }) => {
+    getNextJob: () => {
       if (jobs.length == 0) {
         return null;
       }
@@ -246,7 +244,7 @@ const resolvers = {
         return job;
       });
     },
-    deleteAllJobs: (_, { type }) => {
+    deleteAllJobs: () => {
       jobs = [];
       return Job.destroy({ where: {} }).then(() => "destroyed");
     },

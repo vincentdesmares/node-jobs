@@ -18,7 +18,7 @@
     "jest": "^21.2.1",
     "material-design-icons": "^3.0.1",
     "minimist": "^1.2.0",
-    "pm2": "^2.5.0",
+    "pm2": "^2.8.0",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-apollo": "^1.4.2",
@@ -32,6 +32,7 @@
     "seedrandom": "^2.4.3",
     "sequelize": "^4.3.2",
     "sequelize-cli": "^2.7.0",
+    "sqlite3": "^3.1.13",
     "subscriptions-transport-ws": "^0.8.1",
     "tachyons": "4.7.0",
     "uuid": "^3.1.0"
@@ -47,8 +48,7 @@
     "react-scripts": "1.0.7"
   },
   "scripts": {
-    "start-client":
-      "pm2 delete --silent web; pm2 start  react-scripts --name web -- start",
+    "start-client": "pm2 delete --silent web; pm2 start  react-scripts --name web -- start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
@@ -57,8 +57,7 @@
     "start-all": "yarn run start-server && yarn run start-client",
     "db:migrate": "node_modules/.bin/sequelize db:migrate",
     "migration:create": "node_modules/.bin/sequelize migration:create",
-    "lint-check":
-      "eslint server src seeders migrations config models ecosystem.config.js",
+    "lint-check": "eslint server src seeders migrations config models ecosystem.config.js",
     "analyze": "source-map-explorer build/static/js/main.*"
   }
 }

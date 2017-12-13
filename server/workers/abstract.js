@@ -1,6 +1,6 @@
 class WorkerAbstract {
   constructor() {}
-  process(job) {
+  process() {
     throw "Implement process";
   }
 }

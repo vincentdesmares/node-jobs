@@ -5,5 +5,5 @@ module.exports = {
     return queryInterface.addColumn("Jobs", "status", Sequelize.STRING);
   },
 
-  down: function(queryInterface, Sequelize) {}
+  down: function() {}
 };
