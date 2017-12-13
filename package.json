@@ -47,7 +47,8 @@
     "react-scripts": "1.0.7"
   },
   "scripts": {
-    "start-client": "pm2 delete --silent web; pm2 start  react-scripts --name web -- start",
+    "start-client":
+      "pm2 delete --silent web; pm2 start  react-scripts --name web -- start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
@@ -55,6 +56,9 @@
     "start-server": "pm2 startOrRestart ecosystem.config.js",
     "start-all": "yarn run start-server && yarn run start-client",
     "db:migrate": "node_modules/.bin/sequelize db:migrate",
-    "migration:create": "node_modules/.bin/sequelize migration:create"
+    "migration:create": "node_modules/.bin/sequelize migration:create",
+    "lint-check":
+      "eslint server src seeders migrations config models ecosystem.config.js",
+    "analyze": "source-map-explorer build/static/js/main.*"
   }
 }
