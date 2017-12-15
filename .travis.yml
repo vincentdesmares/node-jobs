@@ -15,10 +15,8 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - google-chrome
     packages:
       - g++-4.8
-      - google-chrome-stable
 
 cache:
   yarn: true
@@ -32,6 +30,5 @@ before_script:
 script:
   - yarn build
   - yarn lint-check
-  - yarn run test-server
   - yarn run test
   # - flow

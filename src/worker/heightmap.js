@@ -2,8 +2,8 @@ require("@std/esm");
 const WorkerAbstract = require("./abstract");
 const FastSimplexNoise = require("fast-simplex-noise").default;
 const seedrandom = require("seedrandom");
-const util = require("util");
-const exec = util.promisify(require("child_process").exec);
+const { promisify } = require("util");
+const exec = promisify(require("child_process").exec);
 var fs = require("fs");
 
 class Heightmap extends WorkerAbstract {
@@ -51,7 +51,7 @@ class Heightmap extends WorkerAbstract {
   }
 }
 
-var heightmap = new Heightmap();
+//var heightmap = new Heightmap();
 //heightmap.process({ test: "test" });
 
 module.exports = Heightmap;

@@ -25,7 +25,7 @@ console.log(
 
 let WorkerClass = null;
 try {
-  WorkerClass = require("./workers/" + workerType).default;
+  WorkerClass = require("./workers/" + workerType);
 } catch (error) {
   console.log("[error] Worker could not be loaded: ", error.message);
 }
