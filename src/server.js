@@ -1,9 +1,10 @@
 const express = require("express");
-const { graphqlExpress, graphiqlExpress } = require("graphql-server-express");
+const { graphqlExpress, graphiqlExpress } = require("apollo-server-express");
 const bodyParser = require("body-parser");
 const { createServer } = require("http");
 const { SubscriptionServer } = require("subscriptions-transport-ws");
 const { execute, subscribe } = require("graphql");
+const myGraphQLSchema = require("./schema.js");
 
 class JobServer {
   constructor() {
@@ -13,24 +14,11 @@ class JobServer {
 
     this.graphqlServer.set("port", this.PORT);
 
-    // Express only serves static assets in production
-    if (process.env.NODE_ENV === "production") {
-      this.graphqlServer.use(express.static("build"));
-    }
-
-    this.graphqlServer.get("/generate", (req, res) => {
-      res.json({
-        message: "Success"
-      });
-    });
-
-    this.myGraphQLSchema = require("./schema.js");
-
     // bodyParser is needed just for POST.
     this.graphqlServer.use(
       "/graphql",
       bodyParser.json(),
-      graphqlExpress({ schema: this.myGraphQLSchema })
+      graphqlExpress({ schema: myGraphQLSchema })
     );
 
     this.graphqlServer.use(
@@ -43,29 +31,47 @@ class JobServer {
     this.wsServer = createServer(this.graphqlServer);
   }
 
-  start() {
-    this.wsServer.listen(this.WS_PORT, () => {
-      console.log(
-        `GraphQL Server is now running on http://localhost:${this.WS_PORT}`
-      );
-      // Set up the WebSocket for handling GraphQL subscriptions
-      new SubscriptionServer(
-        {
-          execute,
-          subscribe,
-          schema: this.myGraphQLSchema
-        },
-        {
-          server: this.wsServer,
-          path: "/subscriptions"
-        }
-      );
+  async start() {
+    await new Promise((resolve, reject) => {
+      this.wsServer.listen(this.WS_PORT, () => {
+        console.log(
+          `GraphQL Server is now running on http://localhost:${
+            this.WS_PORT
+          }/graphql`,
+          `GraphiQL also available on http://localhost:${this.WS_PORT}/graphiql`
+        );
+        // Set up the WebSocket for handling GraphQL subscriptions
+        new SubscriptionServer(
+          {
+            execute,
+            subscribe,
+            schema: myGraphQLSchema
+          },
+          {
+            server: this.wsServer,
+            path: "/subscriptions"
+          }
+        );
+        resolve();
+      });
     });
 
-    this.graphqlServer.listen(this.PORT, () => {
-      console.log(`Find the server at: http://localhost:${this.PORT}/`); // eslint-disable-line no-console
+    await new Promise((resolve, reject) => {
+      this.graphqlServer.listen(this.PORT, () => {
+        console.log(`Find the server at: http://localhost:${this.PORT}/`); // eslint-disable-line no-console
+        resolve();
+      });
     });
+  }
+
+  async stop() {
+    await new Promise((resolve, reject) => this.wsServer.close(resolve));
+    await new Promise((resolve, reject) => this.graphqlServer.close(resolve));
+  }
+
+  getGraphqlServer() {
+    return this.graphqlServer;
   }
 }
 
-exports.default = JobServer;
+module.exports = JobServer;
