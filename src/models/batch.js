@@ -3,15 +3,12 @@ const Sequelize = require("sequelize");
 
 module.exports = function(sequelize) {
   var Batch = sequelize.define(
-    "Batch",
+    "batch",
     {
       status: {
         type: Sequelize.STRING
       },
-      projectId: {
-        type: Sequelize.INTEGER
-      },
-      sceneId: {
+      buildId: {
         type: Sequelize.INTEGER
       }
     },
@@ -22,15 +19,11 @@ module.exports = function(sequelize) {
   );
 
   Batch.associate = function(models) {
-    this.belongsTo(models.Project, {
-      foreignKey: "projectId",
+    models.batch.belongsTo(models.build, {
+      foreignKey: "buildId",
       sourceKey: "id"
     });
-    this.belongsTo(models.Scene, {
-      foreignKey: "sceneId",
-      sourceKey: "id"
-    });
-    this.hasMany(models.Job, {
+    models.job.hasMany(models.job, {
       as: "jobs",
       foreignKey: "batchId",
       sourceKey: "id"

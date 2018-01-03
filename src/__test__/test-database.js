@@ -58,7 +58,7 @@ const umzugSeeders = new Umzug(umzugOptions("./seeders"));
  * Migrates the database
  */
 exports.migrateDatabase = async () =>
-  umzugMigrations.up({
+  await umzugMigrations.up({
     migrations: migrationFiles
   });
 
@@ -66,7 +66,7 @@ exports.migrateDatabase = async () =>
  * Seeds the database with mockup data
  */
 exports.seedDatabase = async () =>
-  umzugSeeders.up({
+  await umzugSeeders.up({
     migrations: seederFiles
   });
 

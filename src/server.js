@@ -65,8 +65,20 @@ class JobServer {
   }
 
   async stop() {
-    await new Promise((resolve, reject) => this.wsServer.close(resolve));
-    await new Promise((resolve, reject) => this.graphqlServer.close(resolve));
+    console.log("stoping web socket server");
+    await new Promise((resolve, reject) =>
+      this.wsServer.close(() => {
+        console.log("ws server stopped");
+        resolve();
+      })
+    );
+    console.log("stoping graphql server");
+    await new Promise((resolve, reject) =>
+      this.graphqlServer.close(() => {
+        console.log("grapgql server stopped");
+        resolve();
+      })
+    );
   }
 
   getGraphqlServer() {

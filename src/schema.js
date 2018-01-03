@@ -1,6 +1,6 @@
 const { makeExecutableSchema } = require("graphql-tools");
 
-const { Job, Project, Scene, Batch } = require("./models");
+const { job, pipeline, build, batch } = require("./models");
 
 const { PubSub } = require("graphql-subscriptions");
 const pubsub = new PubSub();
@@ -15,7 +15,7 @@ const typeDefs = `
     status: String
     batch: Batch
   }
-  type Scene {
+  type Build {
     id: Int!
     name: String
     status: String
@@ -26,23 +26,22 @@ const typeDefs = `
     id: Int!
     status: String
     metadata: String
-    project: Project
-    scene: Scene
+    build: Build
     jobs: [Job]
   }
-  type Project {
+  type Pipeline {
     id: Int!
     name: String
-    scenes: [Scene]
+    builds: [Build]
   }
   # the schema allows the following query:
   type Query {
     jobs: [Job]
     job(id: Int!): Job
-    projects: [Project]
-    project(id: Int!): Project
-    scenes(projectId: Int): [Scene]
-    scene(id: Int!): Scene,
+    pipelines: [Pipeline]
+    pipeline(id: Int!): Pipeline
+    builds(projectId: Int): [Build]
+    build(id: Int!): Build,
     batches: [Batch]
     batch(id: Int!): Batch
   }
@@ -51,10 +50,10 @@ const typeDefs = `
     addJob (
       type: String!
     ): Job
-    addScene (
+    addBuild (
       name: String!
       projectId: Int!
-    ): Scene
+    ): Build
     getNextJob (
       type: String!
     ): Job
@@ -66,19 +65,19 @@ const typeDefs = `
       output: String
       status: String
     ): Job
-    updateScene(
+    updateBuild(
       id: Int!
       metadata: String
-    ): Scene
-    runGeneration(
+    ): Build
+    runPipeline(
       sceneId: Int!
-    ): Scene
+    ): Build
     deleteAllJobs (
       type: String
     ): String
-    addProject (
+    addPipeline (
       name: String!
-    ): Project
+    ): Pipeline
   }
   type Subscription {
     jobUpdated(type: String): Job
@@ -87,11 +86,12 @@ const typeDefs = `
 
 // Load initial jobs
 let jobs = [];
-Job.findAll({
-  where: {
-    status: "pending"
-  }
-})
+job
+  .findAll({
+    where: {
+      status: "pending"
+    }
+  })
   .then(pendingJobs => {
     console.log(
       "Jobs still pending are loaded at server start",
@@ -106,7 +106,8 @@ Job.findAll({
 const resolvers = {
   Query: {
     jobs: () => {
-      return Job.findAll({ order: [["id", "desc"]] })
+      return job
+        .findAll({ order: [["id", "desc"]] })
         .then(jobs => {
           return jobs;
         })
@@ -114,48 +115,49 @@ const resolvers = {
           return [];
         });
     },
-    job: (_, { id }) => Job.findById(id),
-    projects: () => {
-      console.log("projects called");
-      return Project.findAll({
-        order: [["id", "desc"]],
-        include: [{ model: Scene, as: "scenes", include: ["batches"] }]
-      })
-        .then(projects => {
-          return projects;
+    job: (_, { id }) => job.findById(id),
+    pipelines: () => {
+      return pipeline
+        .findAll({
+          order: [["id", "desc"]],
+          include: [{ model: build, as: "builds" }]
+          //include: [{ model: build, as: "builds", include: ["batches"] }]
+        })
+        .then(pipelines => {
+          return pipelines;
         })
         .catch(function(err) {
           console.log(err);
           return [];
         });
     },
-    project: (_, { id }) =>
-      Project.findById(id, {
+    pipeline: (_, { id }) =>
+      pipeline.findById(id, {
         include: [
           {
-            model: Scene,
-            as: "scenes",
-            include: [{ model: Batch, as: "batches", include: ["jobs"] }]
+            model: build,
+            as: "builds",
+            include: [{ model: build, as: "builds", include: ["batches"] }]
           }
         ]
       }),
-    scenes: (_, { projectId }) => {
-      console.log("scenes called");
+    builds: (_, { projectId }) => {
       let where = {};
       if (projectId) {
         where.projectId = projectId;
       }
-      return Scene.findAll({
-        where,
-        order: [["id", "desc"]],
-        include: [
-          {
-            model: Batch,
-            as: "batches",
-            include: [{ model: Job, as: "jobs" }]
-          }
-        ]
-      })
+      return build
+        .findAll({
+          where,
+          order: [["id", "desc"]],
+          include: [
+            {
+              model: batch,
+              as: "batches",
+              include: [{ model: job, as: "jobs" }]
+            }
+          ]
+        })
         .then(scenes => {
           return scenes;
         })
@@ -164,21 +166,22 @@ const resolvers = {
           return [];
         });
     },
-    scene: (_, { id }) =>
-      Scene.findById(id, {
+    build: (_, { id }) =>
+      build.findById(id, {
         include: [
           {
-            model: Batch,
+            model: build,
             as: "batches",
-            include: [{ model: Job, as: "jobs" }]
+            include: [{ model: job, as: "jobs" }]
           }
         ]
       }),
     batches: () => {
       console.log("batches called");
-      return Batch.findAll({
-        order: [["id", "desc"]]
-      })
+      return batch
+        .findAll({
+          order: [["id", "desc"]]
+        })
         .then(batches => {
           //projects[0].scenes = [{ id: 1 }];
           return batches;
@@ -188,11 +191,11 @@ const resolvers = {
           return [];
         });
     },
-    batch: (_, { id }) => Batch.findById(id)
+    batch: (_, { id }) => batch.findById(id)
   },
   Mutation: {
     updateJob: (_, { id, output, status }) => {
-      return Job.findById(id).then(function(job) {
+      return job.findById(id).then(function(job) {
         job.output = output;
         job.status = status;
         job.save();
@@ -201,27 +204,29 @@ const resolvers = {
       });
     },
     addJob: (_, { type }) => {
-      return Job.create({
-        type: type,
-        name: "test 1",
-        input: "test",
-        output: "test2",
-        status: "pending"
-      }).then(function(job) {
-        jobs.push(job.id);
-        return job;
-      });
+      return job
+        .create({
+          type: type,
+          name: "test 1",
+          input: "test",
+          output: "test2",
+          status: "pending"
+        })
+        .then(function(job) {
+          jobs.push(job.id);
+          return job;
+        });
     },
-    addScene: (_, { name, projectId }) => {
-      return Scene.create({
+    addBuild: (_, { name, projectId }) => {
+      return build.create({
         name,
         projectId,
         metadata: "{}",
         status: "virgin"
       });
     },
-    updateScene: (_, { id, metadata }) => {
-      return Scene.findById(id).then(function(scene) {
+    updateBuild: (_, { id, metadata }) => {
+      return build.findById(id).then(function(scene) {
         scene.metadata = metadata;
         scene.save();
         pubsub.publish("sceneUpdated", { sceneUpdated: scene });
@@ -233,74 +238,80 @@ const resolvers = {
         return null;
       }
       let jobId = jobs.shift();
-      return Job.findOne({
-        where: {
-          id: jobId
-        }
-      }).then(job => {
-        job.status = "processing";
-        job.save();
-        pubsub.publish("jobUpdated", { jobUpdated: job });
-        return job;
-      });
+      return job
+        .findOne({
+          where: {
+            id: jobId
+          }
+        })
+        .then(job => {
+          job.status = "processing";
+          job.save();
+          pubsub.publish("jobUpdated", { jobUpdated: job });
+          return job;
+        });
     },
     deleteAllJobs: () => {
       jobs = [];
-      return Job.destroy({ where: {} }).then(() => "destroyed");
+      return job.destroy({ where: {} }).then(() => "destroyed");
     },
-    addProject: (_, { name }) => {
-      return Project.create({
-        name
-      }).then(function(project) {
-        return project;
-      });
-    },
-    runGeneration: async (_, { sceneId }) => {
-      console.log(`Generating batches and jobs for scene ${sceneId}`);
-      let scene = await Scene.findById(sceneId); //.then(scene => {
-      console.log("scene found", scene);
-      let metadata = JSON.parse(scene.metadata);
-      metadata.generationId = metadata.generationId
-        ? metadata.generationId + 1
-        : 1;
-      metadata.seed = metadata.seed ? metadata.seed : "default";
-      for (let i = 0; i < metadata.steps.length; i++) {
-        const step = metadata.steps[i];
-        let batch = await Batch.create({
-          projectId: scene.projectId,
-          sceneId: scene.id,
-          status: "pending"
+    addPipeline: (_, { name }) => {
+      return pipeline
+        .create({
+          name
+        })
+        .then(function(project) {
+          return project;
         });
-        metadata.steps[i].batchId = batch.id;
-        if (step.slots) {
-          for (let slotIndex = 0; slotIndex < step.slots.length; slotIndex++) {
-            let slot = step.slots[slotIndex];
-            let job = await Job.create({
-              type: slot.type,
-              name: `${slot.type} job`,
-              status: "pending",
-              batchId: batch.id,
-              input: JSON.stringify({
-                generationId: metadata.generationId,
-                seed: metadata.seed
-              })
-            });
-            jobs.push(job.id);
-            metadata.steps[i].slots[slotIndex].jobId = job.id;
-          }
-        }
-      }
-      scene.metadata = JSON.stringify(metadata);
-      await scene.save();
-      return await Scene.findById(sceneId, {
-        include: [
-          {
-            model: Batch,
-            as: "batches",
-            include: [{ model: Job, as: "jobs" }]
-          }
-        ]
-      });
+    },
+    runPipeline: async (_, { pipelineId }) => {
+      console.log(
+        `Generating a build, batches and jobs for the pipeline ${pipelineId}`
+      );
+      let pipeline = await pipeline.findById(pipelineId); //.then(scene => {
+      console.log("Pipeline found", pipeline);
+      // let metadata = JSON.parse(scene.metadata);
+      // metadata.generationId = metadata.generationId
+      //   ? metadata.generationId + 1
+      //   : 1;
+      // metadata.seed = metadata.seed ? metadata.seed : "default";
+      // for (let i = 0; i < metadata.steps.length; i++) {
+      //   const step = metadata.steps[i];
+      //   let batch = await Batch.create({
+      //     projectId: scene.projectId,
+      //     sceneId: scene.id,
+      //     status: "pending"
+      //   });
+      //   metadata.steps[i].batchId = batch.id;
+      //   if (step.slots) {
+      //     for (let slotIndex = 0; slotIndex < step.slots.length; slotIndex++) {
+      //       let slot = step.slots[slotIndex];
+      //       let job = await job.create({
+      //         type: slot.type,
+      //         name: `${slot.type} job`,
+      //         status: "pending",
+      //         batchId: batch.id,
+      //         input: JSON.stringify({
+      //           generationId: metadata.generationId,
+      //           seed: metadata.seed
+      //         })
+      //       });
+      //       jobs.push(job.id);
+      //       metadata.steps[i].slots[slotIndex].jobId = job.id;
+      //     }
+      //   }
+      // }
+      // scene.metadata = JSON.stringify(metadata);
+      // await scene.save();
+      // return await Scene.findById(sceneId, {
+      //   include: [
+      //     {
+      //       model: Batch,
+      //       as: "batches",
+      //       include: [{ model: job, as: "jobs" }]
+      //     }
+      //   ]
+      // });
     }
   },
   Subscription: {

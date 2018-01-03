@@ -7,7 +7,7 @@ module.exports = {
     // First application
     {
       name: "API",
-      script: "server/index.js",
+      script: "src/run-server.js",
       watch: true,
       ignore_watch: ["data", ".git/", "src"],
       env: {

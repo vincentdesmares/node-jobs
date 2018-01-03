@@ -44,6 +44,8 @@
     "test": "jest",
     "flow": "flow",
     "start": "pm2 startOrRestart ecosystem.config.js",
+    "db:reset":
+      "rm -rf data/main.db && node_modules/.bin/sequelize db:migrate && sequelize db:seed:all",
     "db:migrate": "node_modules/.bin/sequelize db:migrate",
     "migration:create": "node_modules/.bin/sequelize migration:create",
     "lint-check":

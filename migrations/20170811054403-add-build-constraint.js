@@ -2,10 +2,10 @@
 
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    queryInterface.addConstraint("scene", ["projectId"], {
+    queryInterface.addConstraint("build", ["pipelineId"], {
       type: "FOREIGN KEY",
       references: {
-        table: "Projects",
+        table: "pipeline",
         field: "id"
       },
       onDelete: "cascade",

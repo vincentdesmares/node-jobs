@@ -3,11 +3,11 @@
 module.exports = {
   up: function(queryInterface, Sequelize) {
     return Promise.all([
-      queryInterface.addColumn("Jobs", "batchId", {
+      queryInterface.addColumn("job", "batchId", {
         type: Sequelize.INTEGER,
         allowNull: true
       }),
-      queryInterface.addConstraint("Jobs", ["batchId"], {
+      queryInterface.addConstraint("job", ["batchId"], {
         type: "FOREIGN KEY",
         references: {
           table: "batch",

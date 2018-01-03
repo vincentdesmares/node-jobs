@@ -2,8 +2,8 @@
 const Sequelize = require("sequelize");
 
 module.exports = function(sequelize) {
-  var Scene = sequelize.define(
-    "Scene",
+  var Build = sequelize.define(
+    "build",
     {
       name: {
         type: Sequelize.STRING
@@ -14,30 +14,30 @@ module.exports = function(sequelize) {
       metadata: {
         type: Sequelize.TEXT
       },
-      projectId: {
+      pipelineId: {
         type: Sequelize.INTEGER,
         references: {
-          model: "Project",
+          model: "project",
           key: "id"
         }
       }
     },
     {
       freezeTableName: true,
-      tableName: "scene"
+      tableName: "build"
     }
   );
 
-  Scene.associate = function(models) {
-    this.belongsTo(models.Project, {
-      foreignKey: "projectId",
+  Build.associate = function(models) {
+    models.build.belongsTo(models.pipeline, {
+      foreignKey: "pipelineId",
       sourceKey: "id"
     });
-    this.hasMany(models.Batch, {
+    models.build.hasMany(models.batch, {
       as: "batches",
-      foreignKey: "sceneId",
+      foreignKey: "BuildId",
       sourceKey: "id"
     });
   };
-  return Scene;
+  return Build;
 };

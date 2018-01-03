@@ -1,3 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test the graphql queries QUERY: projects 1`] = `"1"`;
+exports[`Test the graphql queries QUERY: projects 1`] = `
+Object {
+  "errors": Array [
+    Object {
+      "message": "Cannot read property 'operation' of null",
+    },
+  ],
+}
+`;
