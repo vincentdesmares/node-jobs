@@ -136,30 +136,23 @@ const resolvers = {
         include: [
           {
             model: build,
-            as: "builds",
-            include: [{ model: build, as: "builds", include: ["batches"] }]
+            as: "builds"
           }
         ]
       }),
-    builds: (_, { projectId }) => {
-      let where = {};
-      if (projectId) {
-        where.projectId = projectId;
-      }
+    builds: (_, {}) => {
       return build
         .findAll({
-          where,
           order: [["id", "desc"]],
           include: [
             {
               model: batch,
-              as: "batches",
-              include: [{ model: job, as: "jobs" }]
+              as: "batches"
             }
           ]
         })
-        .then(scenes => {
-          return scenes;
+        .then(builds => {
+          return builds;
         })
         .catch(function(err) {
           console.log(err);

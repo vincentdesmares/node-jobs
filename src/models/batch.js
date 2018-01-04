@@ -23,7 +23,7 @@ module.exports = function(sequelize) {
       foreignKey: "buildId",
       sourceKey: "id"
     });
-    models.job.hasMany(models.job, {
+    models.batch.hasMany(models.job, {
       as: "jobs",
       foreignKey: "batchId",
       sourceKey: "id"

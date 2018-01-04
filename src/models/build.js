@@ -5,9 +5,6 @@ module.exports = function(sequelize) {
   var Build = sequelize.define(
     "build",
     {
-      name: {
-        type: Sequelize.STRING
-      },
       status: {
         type: Sequelize.STRING
       },
@@ -35,7 +32,7 @@ module.exports = function(sequelize) {
     });
     models.build.hasMany(models.batch, {
       as: "batches",
-      foreignKey: "BuildId",
+      foreignKey: "buildId",
       sourceKey: "id"
     });
   };
