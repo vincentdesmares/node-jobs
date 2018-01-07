@@ -7,6 +7,9 @@ module.exports = function(sequelize) {
     {
       name: {
         type: Sequelize.STRING
+      },
+      metadata: {
+        type: Sequelize.STRING
       }
     },
     {

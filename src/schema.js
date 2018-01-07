@@ -32,6 +32,7 @@ const typeDefs = `
   type Pipeline {
     id: Int!
     name: String
+    metadata: String
     builds: [Build]
   }
   # the schema allows the following query:
@@ -69,6 +70,10 @@ const typeDefs = `
       id: Int!
       metadata: String
     ): Build
+    updatePipeline(
+      id: Int!
+      metadata: String
+    ): Pipeline
     runPipeline(
       sceneId: Int!
     ): Build
@@ -256,6 +261,14 @@ const resolvers = {
         .then(function(project) {
           return project;
         });
+    },
+    updatePipeline: (_, { id, metadata }) => {
+      return pipeline.findById(id).then(function(pipeline) {
+        pipeline.metadata = metadata;
+        pipeline.save();
+        pubsub.publish("pipelineUpdated", { pipelineUpdated: pipeline });
+        return pipeline;
+      });
     },
     runPipeline: async (_, { pipelineId }) => {
       console.log(
