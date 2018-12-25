@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const { createServer } = require("http");
 const { SubscriptionServer } = require("subscriptions-transport-ws");
 const { execute, subscribe } = require("graphql");
+const cors = require("cors");
 const myGraphQLSchema = require("./schema.js");
 
 class JobServer {
@@ -17,6 +18,7 @@ class JobServer {
     // bodyParser is needed just for POST.
     this.graphqlServer.use(
       "/graphql",
+      cors({ origin: "*" }),
       bodyParser.json(),
       graphqlExpress({ schema: myGraphQLSchema })
     );
