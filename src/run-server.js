@@ -1,5 +1,5 @@
-const JobServer = require("./server");
+const JobServer = require('./server')
 
-const server = new JobServer();
+const server = new JobServer()
 
-server.start();
+server.start()

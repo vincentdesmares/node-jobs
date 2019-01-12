@@ -1,2 +1,2 @@
-exports.JobServer = require("./server");
-exports.WorkerAbstract = require("./worker/abstract");
+exports.JobServer = require('./server')
+exports.WorkerAbstract = require('./worker/abstract')

@@ -1,9 +1,9 @@
-"use strict";
-const Sequelize = require("sequelize");
+'use strict'
+const Sequelize = require('sequelize')
 
 module.exports = function(sequelize) {
   var Pipeline = sequelize.define(
-    "pipeline",
+    'pipeline',
     {
       name: {
         type: Sequelize.STRING
@@ -14,15 +14,15 @@ module.exports = function(sequelize) {
     },
     {
       freezeTableName: true,
-      tableName: "pipeline"
+      tableName: 'pipeline'
     }
-  );
+  )
   Pipeline.associate = function(models) {
-    models.pipeline.hasMany(models.build, {
-      as: "builds",
-      foreignKey: "pipelineId",
-      sourceKey: "id"
-    });
-  };
-  return Pipeline;
-};
+    models.pipeline.hasMany(models.batch, {
+      as: 'batches',
+      foreignKey: 'pipelineId',
+      sourceKey: 'id'
+    })
+  }
+  return Pipeline
+}

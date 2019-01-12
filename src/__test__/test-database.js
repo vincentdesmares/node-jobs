@@ -1,8 +1,8 @@
-const path = require("path");
-const fs = require("fs");
-const Umzug = require("umzug");
-const models = require("./../models");
-const sequelize = models.sequelize; // sequelize is the instance of the db
+const path = require('path')
+const fs = require('fs')
+const Umzug = require('umzug')
+const models = require('./../models')
+const sequelize = models.sequelize // sequelize is the instance of the db
 
 /**
  * This file handles an im-memory SQLite database used for test purposes.
@@ -19,7 +19,7 @@ const sequelize = models.sequelize; // sequelize is the instance of the db
  * Returns a JS plain Object with the correct options, ready to feed `new Umzug(...)`.
  */
 const umzugOptions = path => ({
-  storage: "sequelize",
+  storage: 'sequelize',
   storageOptions: {
     sequelize
   },
@@ -30,29 +30,29 @@ const umzugOptions = path => ({
       function() {
         throw new Error(
           'Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.'
-        );
+        )
       }
     ],
     path,
     pattern: /\.js$/
   }
-});
+})
 
 // Array containing the filenames of the migrations files without extensions, sorted chronologically.
 const migrationFiles = fs
-  .readdirSync("./migrations/")
+  .readdirSync('./migrations/')
   .sort()
-  .map(f => path.basename(f, ".js"));
+  .map(f => path.basename(f, '.js'))
 
 // Array containing the filenames of the seeders files without extensions, sorted chronologically.
 const seederFiles = fs
-  .readdirSync("./seeders/")
+  .readdirSync('./seeders/')
   .sort()
-  .map(f => path.basename(f, ".js"));
+  .map(f => path.basename(f, '.js'))
 
 // Instances of Umzug for migrations and seeders
-const umzugMigrations = new Umzug(umzugOptions("./migrations"));
-const umzugSeeders = new Umzug(umzugOptions("./seeders"));
+const umzugMigrations = new Umzug(umzugOptions('./migrations'))
+const umzugSeeders = new Umzug(umzugOptions('./seeders'))
 
 /**
  * Migrates the database
@@ -60,7 +60,7 @@ const umzugSeeders = new Umzug(umzugOptions("./seeders"));
 exports.migrateDatabase = async () =>
   await umzugMigrations.up({
     migrations: migrationFiles
-  });
+  })
 
 /**
  * Seeds the database with mockup data
@@ -68,12 +68,11 @@ exports.migrateDatabase = async () =>
 exports.seedDatabase = async () =>
   await umzugSeeders.up({
     migrations: seederFiles
-  });
+  })
 
 /**
  * Deletes all the tables
  */
-exports.deleteTables = async () =>
-  sequelize.getQueryInterface().dropAllTables();
+exports.deleteTables = async () => sequelize.getQueryInterface().dropAllTables()
 
-exports.models = models;
+exports.models = models

@@ -1,9 +1,9 @@
-"use strict";
-const Sequelize = require("sequelize");
+'use strict'
+const Sequelize = require('sequelize')
 
 module.exports = function(sequelize) {
   var Job = sequelize.define(
-    "job",
+    'job',
     {
       type: {
         type: Sequelize.STRING
@@ -26,14 +26,14 @@ module.exports = function(sequelize) {
     },
     {
       freezeTableName: true,
-      tableName: "job"
+      tableName: 'job'
     }
-  );
+  )
   Job.associate = function(models) {
     models.job.belongsTo(models.batch, {
-      foreignKey: "batchId",
-      sourceKey: "id"
-    });
-  };
-  return Job;
-};
+      foreignKey: 'batchId',
+      sourceKey: 'id'
+    })
+  }
+  return Job
+}

@@ -1,8 +1,8 @@
 class WorkerAbstract {
   constructor() {}
   process() {
-    throw "Implement process";
+    throw 'Implement process'
   }
 }
 
-module.exports = WorkerAbstract;
+module.exports = WorkerAbstract

@@ -1,8 +1,8 @@
-"use strict";
+'use strict'
 
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    return queryInterface.createTable("batch", {
+    return queryInterface.createTable('batch', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,11 +12,15 @@ module.exports = {
       status: {
         type: Sequelize.STRING
       },
-      sceneId: {
-        type: Sequelize.INTEGER
-      },
-      buildId: {
-        type: Sequelize.INTEGER
+      pipelineId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'pipeline',
+          key: 'id',
+          onDelete: 'cascade',
+          onUpdate: 'cascade'
+        },
+        allowNull: true
       },
       createdAt: {
         allowNull: false,
@@ -30,8 +34,9 @@ module.exports = {
         allowNull: true,
         type: Sequelize.DATE
       }
-    });
+    })
   },
-
-  down: function() {}
-};
+  down: function(queryInterface) {
+    return queryInterface.dropTable('batch')
+  }
+}

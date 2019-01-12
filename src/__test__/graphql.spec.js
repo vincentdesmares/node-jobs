@@ -1,26 +1,26 @@
-const request = require("supertest");
-const testDatabase = require("./test-database.js");
-const migrateDatabase = testDatabase.migrateDatabase;
-const seedDatabase = testDatabase.seedDatabase;
+const request = require('supertest')
+const testDatabase = require('./test-database.js')
+const migrateDatabase = testDatabase.migrateDatabase
+const seedDatabase = testDatabase.seedDatabase
 
-const JobServer = require("./../server");
-const server = new JobServer();
+const JobServer = require('./../server')
+const server = new JobServer()
 
 /**
  * Starting the tests
  */
-describe("Test the graphql queries", () => {
+describe('Test the graphql queries', () => {
   beforeAll(async () => {
-    await migrateDatabase();
-    await seedDatabase();
-    await server.start();
-  });
+    await migrateDatabase()
+    await seedDatabase()
+    await server.start()
+  })
 
   afterAll(async () => {
-    await server.stop();
-  });
+    await server.stop()
+  })
 
-  it("QUERY: projects", async () => {
+  it('QUERY: projects', async () => {
     const response = await request(server.getGraphqlServer()).get(
       `/graphql?query=
           query getjobs {
@@ -30,10 +30,10 @@ describe("Test the graphql queries", () => {
               }
         }
         &operationName=getJobs`
-    );
+    )
 
-    expect(response.body).toMatchSnapshot();
-  });
+    expect(response.body).toMatchSnapshot()
+  })
 
   //   it("QUERY: project 1", async () => {
   //     const response = await request(server.getGraphqlServer()).get(
@@ -93,4 +93,4 @@ describe("Test the graphql queries", () => {
   //       .set("userid", 6);
   //     expect(response.body).toMatchSnapshot();
   //   });
-});
+})
