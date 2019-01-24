@@ -13,15 +13,15 @@ const pubSubInstance = new PubSub()
 
 graphqlSchemaDeclaration.job = {
   model: models.job,
-  actions: ['list', 'create']
+  actions: ['list', 'create', 'count']
 }
 graphqlSchemaDeclaration.batch = {
   model: models.batch,
-  actions: ['list', 'create']
+  actions: ['list', 'create', 'delete']
 }
 graphqlSchemaDeclaration.pipeline = {
   model: models.pipeline,
-  actions: ['list', 'create']
+  actions: ['list', 'create', 'update']
 }
 
 module.exports = {
