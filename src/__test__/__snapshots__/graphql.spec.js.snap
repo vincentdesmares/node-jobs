@@ -2,10 +2,17 @@
 
 exports[`Test the graphql queries QUERY: projects 1`] = `
 Object {
-  "errors": Array [
-    Object {
-      "message": "Cannot read property 'operation' of null",
-    },
-  ],
+  "data": Object {
+    "job": Array [
+      Object {
+        "id": 1,
+        "name": "Bla a",
+      },
+      Object {
+        "id": 2,
+        "name": "Bla b",
+      },
+    ],
+  },
 }
 `;

@@ -22,8 +22,7 @@ describe('Test the graphql queries', () => {
 
   it('QUERY: projects', async () => {
     const response = await request(server.getGraphqlServer()).get(
-      `/graphql?query=
-          query getjobs {
+      `/graphql?query=query getJobs {
               job {
                 id
                 name    

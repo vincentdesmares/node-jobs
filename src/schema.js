@@ -1,6 +1,6 @@
 const {
   generateModelTypes,
-  generateGraphqlExpressMiddleware,
+  generateApolloServer,
   generateSchema
 } = require('graphql-sequelize-generator')
 const { PubSub } = require('graphql-subscriptions')
@@ -8,7 +8,7 @@ const { PubSub } = require('graphql-subscriptions')
 const models = require('./models')
 
 const graphqlSchemaDeclaration = {}
-const modelTypes = generateModelTypes(models)
+const types = generateModelTypes(models)
 const pubSubInstance = new PubSub()
 
 graphqlSchemaDeclaration.job = {
@@ -25,14 +25,14 @@ graphqlSchemaDeclaration.pipeline = {
 }
 
 module.exports = {
-  server: generateGraphqlExpressMiddleware(
+  server: generateApolloServer({
     graphqlSchemaDeclaration,
-    modelTypes,
+    types,
     models,
     pubSubInstance,
-    {
+    apolloServerOptions: {
       playground: true
     }
-  ),
-  schema: generateSchema(graphqlSchemaDeclaration, modelTypes, models)
+  }),
+  schema: generateSchema({ graphqlSchemaDeclaration, types, models })
 }
