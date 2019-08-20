@@ -1,14 +1,22 @@
 const express = require('express')
 const { createServer } = require('http')
-const { server } = require('./schema.js')
+const getServer = require('./schema.js')
+const debug = require('debug')('node-jobs')
 
 class JobServer {
-  constructor() {
+  constructor({ dbConfig }) {
+    if (!dbConfig) {
+      throw new Error(
+        'You must specify at least a database configuration under dbConfig.'
+      )
+    }
+
     this.app = express()
     this.WS_PORT = 5000
     this.PORT = process.env.PORT || 8080
 
     this.app.set('port', this.PORT)
+    const server = getServer(dbConfig)
     /**
      * This is the test server.
      * Used to allow the access to the Graphql Playground at this address: http://localhost:8080/graphql.
@@ -26,27 +34,20 @@ class JobServer {
   async start() {
     return new Promise((resolve, reject) => {
       this.httpServer.listen(this.PORT, () => {
-        console.log(`Find the server at: http://localhost:${this.PORT}/`) // eslint-disable-line no-console
+        debug(`Find the server at: http://localhost:${this.PORT}/graphql`) // eslint-disable-line no-console
         resolve(this.httpServer)
       })
     })
   }
 
   async stop() {
-    console.log('stoping web socket server')
+    debug('stoping web socket server')
     await new Promise((resolve, reject) =>
       this.httpServer.close(() => {
-        console.log('http server stopped')
+        debug('http server stopped')
         resolve()
       })
     )
-    // console.log('stoping graphql server')
-    // await new Promise((resolve, reject) =>
-    //   this.app.close(() => {
-    //     console.log('grapgql server stopped')
-    //     resolve()
-    //   })
-    // )
   }
 
   getGraphqlServer() {

@@ -1,35 +1,36 @@
-require("@std/esm");
-const uuidv4 = require("uuid/v4");
+require('@std/esm')
+const uuidv4 = require('uuid/v4')
+const debug = require('debug')('node-jobs')
 
-console.log("Uniq id for worker life:", uuidv4());
+debug('Uniq id for worker life:', uuidv4())
 
-const ApolloModule = require("apollo-client");
-const ApolloClient = ApolloModule.default;
-const createNetworkInterface = ApolloModule.createNetworkInterface;
-const gql = require("graphql-tag");
+const ApolloModule = require('apollo-client')
+const ApolloClient = ApolloModule.default
+const createNetworkInterface = ApolloModule.createNetworkInterface
+const gql = require('graphql-tag')
 
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
-    uri: "http://localhost:3000/graphql"
+    uri: 'http://localhost:3000/graphql'
   })
-});
+})
 
-const loopTime = 1000;
-var argv = require("minimist")(process.argv.slice(2));
-console.dir(argv);
+const loopTime = 1000
+var argv = require('minimist')(process.argv.slice(2))
+debug(argv)
 
-let workerType = argv.t ? argv.t : "heightmap";
-console.log(
+let workerType = argv.t ? argv.t : 'heightmap'
+debug(
   `Starting a ${workerType} worker, will look for job every ${loopTime / 1000}s`
-);
+)
 
-let WorkerClass = null;
+let WorkerClass = null
 try {
-  WorkerClass = require("./workers/" + workerType);
+  WorkerClass = require('./workers/' + workerType)
 } catch (error) {
-  console.log("[error] Worker could not be loaded: ", error.message);
+  debug('[error] Worker could not be loaded: ', error.message)
 }
-const worker = new WorkerClass();
+const worker = new WorkerClass()
 // client
 //   .query({
 //     query: gql`
@@ -57,7 +58,7 @@ const getNextJobQuery = gql`
       output
     }
   }
-`;
+`
 
 const updateJobQuery = gql`
   mutation updateJob(
@@ -84,41 +85,41 @@ const updateJobQuery = gql`
       status
     }
   }
-`;
+`
 
 function checkForJobs() {
   client
     .mutate({
       mutation: getNextJobQuery,
-      variables: { type: "commandline" }
+      variables: { type: 'commandline' }
     })
     .then(({ data: { getNextJob: job } }) => {
       if (!job) {
-        setTimeout(checkForJobs, loopTime);
-        return;
+        setTimeout(checkForJobs, loopTime)
+        return
       }
-      console.log("Reiceived a new job", job);
+      debug('Reiceived a new job', job)
       worker
         .process(job)
         .then(job => {
-          console.log("Job's done", job.id);
-          console.log("Updating job");
-          job.status = "done";
+          debug("Job's done", job.id)
+          debug('Updating job')
+          job.status = 'done'
           client
             .mutate({
               mutation: updateJobQuery,
               variables: job
             })
             .then(job => {
-              console.log("Job saved!", job);
-              checkForJobs();
-            });
+              debug('Job saved!', job)
+              checkForJobs()
+            })
         })
         .catch(error => {
-          console.log("Job failed", error);
-        });
+          debug('Job failed', error)
+        })
     })
-    .catch(error => console.error(error));
+    .catch(error => debug(error))
 }
 
-checkForJobs();
+checkForJobs()

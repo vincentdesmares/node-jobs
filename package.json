@@ -10,6 +10,7 @@
     "body-parser": "^1.17.2",
     "cors": "^2.8.5",
     "dataloader-sequelize": "^1.7.6",
+    "debug": "^4.1.1",
     "express": "^4.16.2",
     "fast-simplex-noise": "^3.2.0",
     "graphql": "14.0.2",
@@ -48,7 +49,7 @@
     "react-scripts": "^1.0.17"
   },
   "scripts": {
-    "test": "NODE_ENV=test jest",
+    "test": "DEBUG=-* NODE_ENV=test jest",
     "flow": "flow",
     "start": "pm2 startOrRestart ecosystem.config.js",
     "db:reset": "rm -rf data/main.db && node_modules/.bin/sequelize db:migrate && sequelize db:seed:all",

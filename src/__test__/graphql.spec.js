@@ -2,9 +2,9 @@ const request = require('supertest')
 const testDatabase = require('./test-database.js')
 const migrateDatabase = testDatabase.migrateDatabase
 const seedDatabase = testDatabase.seedDatabase
+const getNewServer = testDatabase.getNewServer
 
-const JobServer = require('./../server')
-const server = new JobServer()
+const server = getNewServer()
 
 /**
  * Starting the tests

@@ -1,21 +1,17 @@
 {
   "development": {
     "storage": "data/main.db",
-    "host": "127.0.0.1",
-    "dialect": "sqlite"
+    "dialect": "sqlite",
+    "logging": false
   },
   "test": {
-    "username": "root",
-    "password": null,
     "database": ":memory:",
-    "host": "127.0.0.1",
-    "dialect": "sqlite"
+    "dialect": "sqlite",
+    "logging": false
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "database": ":memory:",
+    "dialect": "sqlite",
+    "logging": false
   }
 }

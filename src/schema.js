@@ -1,31 +1,35 @@
 const {
   generateModelTypes,
-  generateApolloServer,
-  generateSchema
+  generateApolloServer
 } = require('graphql-sequelize-generator')
 const { PubSub } = require('graphql-subscriptions')
+const getModels = require('./models')
 
-const models = require('./models')
+function getSchemaDeclaration(models) {
+  const graphqlSchemaDeclaration = {}
 
-const graphqlSchemaDeclaration = {}
-const types = generateModelTypes(models)
-const pubSubInstance = new PubSub()
-
-graphqlSchemaDeclaration.job = {
-  model: models.job,
-  actions: ['list', 'create', 'count']
+  graphqlSchemaDeclaration.job = {
+    model: models.job,
+    actions: ['list', 'create', 'count']
+  }
+  graphqlSchemaDeclaration.batch = {
+    model: models.batch,
+    actions: ['list', 'create', 'delete']
+  }
+  graphqlSchemaDeclaration.pipeline = {
+    model: models.pipeline,
+    actions: ['list', 'create', 'update']
+  }
+  return graphqlSchemaDeclaration
 }
-graphqlSchemaDeclaration.batch = {
-  model: models.batch,
-  actions: ['list', 'create', 'delete']
-}
-graphqlSchemaDeclaration.pipeline = {
-  model: models.pipeline,
-  actions: ['list', 'create', 'update']
-}
 
-module.exports = {
-  server: generateApolloServer({
+module.exports = dbConfig => {
+  const models = getModels(dbConfig)
+  const types = generateModelTypes(models)
+  const pubSubInstance = new PubSub()
+  const graphqlSchemaDeclaration = getSchemaDeclaration(models)
+
+  return generateApolloServer({
     graphqlSchemaDeclaration,
     types,
     models,
@@ -33,6 +37,5 @@ module.exports = {
     apolloServerOptions: {
       playground: true
     }
-  }),
-  schema: generateSchema({ graphqlSchemaDeclaration, types, models })
+  })
 }

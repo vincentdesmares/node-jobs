@@ -7,10 +7,6 @@ const exec = promisify(require('child_process').exec)
 var fs = require('fs')
 
 class Heightmap extends WorkerAbstract {
-  constructor() {
-    super()
-  }
-
   async process(job) {
     const config = job.input != '' ? JSON.parse(job.input) : {}
     const rng = seedrandom('hello')

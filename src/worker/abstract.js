@@ -1,7 +1,6 @@
 class WorkerAbstract {
-  constructor() {}
   process() {
-    throw 'Implement process'
+    throw new Error('Implement process')
   }
 }
 

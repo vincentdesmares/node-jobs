@@ -8,10 +8,6 @@ var fs = require('fs')
 const { sequelize } = require('../models')
 
 class Zoning extends WorkerAbstract {
-  constructor() {
-    super()
-  }
-
   async process(job) {
     const type = 'water'
     const zoneDefinition = '0-500]:0, (500-1024]:1, (1025-2600:0'

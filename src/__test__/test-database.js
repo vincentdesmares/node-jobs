@@ -1,7 +1,13 @@
 const path = require('path')
 const fs = require('fs')
 const Umzug = require('umzug')
-const models = require('./../models')
+const getModels = require('./../models')
+const Server = require('./../server')
+
+var env = process.env.NODE_ENV || 'development'
+var dbConfig = require(path.join(__dirname, '/../config.json'))[env]
+
+const models = getModels(dbConfig)
 const sequelize = models.sequelize // sequelize is the instance of the db
 
 /**
@@ -58,7 +64,7 @@ const umzugSeeders = new Umzug(umzugOptions('./seeders'))
  * Migrates the database
  */
 exports.migrateDatabase = async () =>
-  await umzugMigrations.up({
+  umzugMigrations.up({
     migrations: migrationFiles
   })
 
@@ -66,7 +72,7 @@ exports.migrateDatabase = async () =>
  * Seeds the database with mockup data
  */
 exports.seedDatabase = async () =>
-  await umzugSeeders.up({
+  umzugSeeders.up({
     migrations: seederFiles
   })
 
@@ -76,3 +82,7 @@ exports.seedDatabase = async () =>
 exports.deleteTables = async () => sequelize.getQueryInterface().dropAllTables()
 
 exports.models = models
+
+exports.getNewServer = () => {
+  return new Server({ dbConfig })
+}
