@@ -4,19 +4,30 @@ const getServer = require('./schema.js')
 const debug = require('debug')('node-jobs')
 
 class JobServer {
-  constructor({ dbConfig }) {
+  /**
+   *
+   * @param {Object} parameters
+   * @param {Object} parameters.dbConfig A sequelize configuration
+   * @param {Object} parameters.app An express app if already available
+   * @param {Object} parameters.httpServer An httpServer if already available
+   */
+  constructor({ dbConfig, app, httpServer }) {
     if (!dbConfig) {
       throw new Error(
         'You must specify at least a database configuration under dbConfig.'
       )
     }
 
-    this.app = express()
-    this.WS_PORT = 5000
-    this.PORT = process.env.PORT || 8080
-
-    this.app.set('port', this.PORT)
+    if (app) {
+      this.app = app
+    } else {
+      // If NJ runs in standalone mode, we create an express server
+      this.app = express()
+      this.PORT = process.env.PORT || 8080
+      this.app.set('port', this.PORT)
+    }
     const server = getServer(dbConfig)
+
     /**
      * This is the test server.
      * Used to allow the access to the Graphql Playground at this address: http://localhost:8080/graphql.
@@ -27,8 +38,13 @@ class JobServer {
       path: '/graphql'
     })
 
-    this.httpServer = createServer(this.app)
-    server.installSubscriptionHandlers(this.httpServer)
+    if (app) {
+      server.installSubscriptionHandlers(httpServer)
+    } else {
+      // In standalone mode we have to setup the subscriptions
+      this.httpServer = createServer(this.app)
+      server.installSubscriptionHandlers(this.httpServer)
+    }
   }
 
   async start() {
