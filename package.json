@@ -20,7 +20,7 @@
     "graphql-tools": "^2.13.0",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^21.2.1",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.2",
     "pm2": "^2.9.1",
     "react-apollo": "^2.0.4",
     "seedrandom": "^2.4.3",
